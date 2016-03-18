@@ -3,7 +3,7 @@ var sanitize = require("mongo-sanitize");
 var Message = require('../models/message');
 
 var router = express.Router();
-var collectionName = 'messagescollection';
+var collectionName = 'messages';
 
 
 /* GET Messages */
