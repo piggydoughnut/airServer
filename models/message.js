@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
-var collectionName = 'messagescollection';
+var collectionName = 'messages';
 
 var messageSchema = new Schema({
         text: {type: String, required: true},

@@ -23,7 +23,7 @@ router.get('/:id', function (req, res) {
         if (err) {
             return res.status(400).send(err);
         }
-        return res.status(200).json(user);
+        return res.status(200).json({user: user});
     });
 });
 
@@ -44,7 +44,7 @@ router.put('/:id', function (req, res) {
             if (err) {
                 return res.status(400).send(e.message);
             }
-            res.status(200).send("User was updated");
+            res.status(200).json("User was updated");
         }
     );
 });

@@ -17,7 +17,6 @@ router.get('/', function (req, res) {
 
 /* POST Message */
 router.post('/', function (req, res) {
-    console.log(req.body.text);
     var message = new Message({
         text: sanitize(req.body.text), // ???
         location: {
@@ -32,7 +31,7 @@ router.post('/', function (req, res) {
             res.status(400).send(err);
             return;
         }
-        res.status(200).send('Messsage was successfully saved');
+        res.status(200).json('Messsage was successfully saved');
     })
 });
 
