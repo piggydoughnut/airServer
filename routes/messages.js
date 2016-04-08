@@ -18,21 +18,28 @@ router.get('/', function (req, res) {
 /* POST Message */
 router.post('/', function (req, res) {
     var message = new Message({
-        text: sanitize(req.body.text), // ???
+        text: req.body.text,
         location: {
-            lat: req.body.location.lat,
-            lng: req.body.location.lng
+            latitude: req.body.location.latitude,
+            longitude: req.body.location.longitude
         },
-        validity: req.body.validity
+        validity: req.body.validity,
+        user: req.body.user,
+        file: req.body.file
     });
 
     message.save(function (err) {
         if (err) {
-            res.status(400).send(err);
+           console.log(err);
+            res.status(400).json(err);
             return;
         }
-        res.status(200).json('Messsage was successfully saved');
-    })
+        res.status(200).json({
+            text: message.text,
+            _id: message.id,
+            user: message.user
+        });
+    });
 });
 
 module.exports = router;

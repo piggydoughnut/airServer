@@ -6,14 +6,18 @@ var collectionName = 'messages';
 var messageSchema = new Schema({
         text: {type: String, required: true},
         location: {
-            lng: {type: Number, required: true},
-            lat: {type: Number, required: true},
+            longitude: {type: Number, required: true},
+            latitude: {type: Number, required: true},
             city: String,
             country: String
         },
         validity: {type: Number, required: true},
         valid: Boolean,
-        user_id: Number,
+        user: {
+            id: {type: String, required: true},
+            username: {type: String, required: true}
+        },
+        file: Object,
         views_count: Number,
         created_at: Date
     },
