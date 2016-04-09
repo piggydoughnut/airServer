@@ -1,12 +1,12 @@
 var express = require('express');
-var mongo = require('mongodb');
 var router = express.Router();
+import {setUpDb, createId} from "../util/dbHelper";
 
 var collectionName = 'users';
 
 /* GET users  */
 router.get('/', function (req, res) {
-    collection = setUpDb(req);
+    var collection = setUpDb(req, collectionName);
     collection.find({}, {}, function (e, docs) {
         res.json(docs);
     });
@@ -14,9 +14,9 @@ router.get('/', function (req, res) {
 
 /* GET user  */
 router.get('/:id', function (req, res) {
-    var o_id = createId(req, res);
+    var o_id = createId(req, res, mongo);
 
-    setUpDb(req).findOne({_id: o_id}, function (err, user) {
+    setUpDb(req, collectionName).findOne({_id: o_id}, function (err, user) {
         if (!user) {
             return res.status(404).send('User with id ' + o_id + ' was not found');
         }
@@ -34,9 +34,9 @@ router.post('/', function (req, res) {
 
 /* PUT User */
 router.put('/:id', function (req, res) {
-    var o_id = createId(req, res);
+    var o_id = createId(req, res, mongo);
 
-    setUpDb(req).update(
+    setUpDb(req, collectionName).update(
         {_id: o_id},
         {$set: req.body},
         {upsert: true, w: 1},
@@ -48,18 +48,5 @@ router.put('/:id', function (req, res) {
         }
     );
 });
-
-function setUpDb(req) {
-    var db = req.db;
-    return db.get(collectionName);
-}
-
-function createId(req, res) {
-    try {
-        return new mongo.ObjectID(req.params.id);
-    } catch (e) {
-        return res.status(400).send(e.message);
-    }
-}
 
 module.exports = router;

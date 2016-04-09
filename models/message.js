@@ -5,6 +5,7 @@ var collectionName = 'messages';
 
 var messageSchema = new Schema({
         text: {type: String, required: true},
+        description: {type: String, required: true},
         location: {
             longitude: {type: Number, required: true},
             latitude: {type: Number, required: true},

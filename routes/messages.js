@@ -1,6 +1,7 @@
 var express = require('express');
 var sanitize = require("mongo-sanitize");
 var Message = require('../models/message');
+import {setUpDb} from '../util/dbHelper';
 
 var router = express.Router();
 var collectionName = 'messages';
@@ -8,8 +9,7 @@ var collectionName = 'messages';
 
 /* GET Messages */
 router.get('/', function (req, res) {
-    var db = req.db;
-    var collection = db.get(collectionName);
+    var collection = setUpDb(req, collectionName);
     collection.find({}, {}, function (e, docs) {
         res.json(docs);
     });
@@ -25,12 +25,13 @@ router.post('/', function (req, res) {
         },
         validity: req.body.validity,
         user: req.body.user,
-        file: req.body.file
+        file: req.body.file,
+        description: req.body.text.substr(0, 150)
     });
 
     message.save(function (err) {
         if (err) {
-           console.log(err);
+            console.log(err);
             res.status(400).json(err);
             return;
         }
@@ -39,6 +40,14 @@ router.post('/', function (req, res) {
             _id: message.id,
             user: message.user
         });
+    });
+});
+
+/* GET Message's comments */
+router.get('/:id/comments', function (req, res) {
+    var collection = setUpDb(req, collectionName);
+    collection.find({parent: req.params.id}, {}, function (e, docs) {
+        res.json(docs);
     });
 });
 
