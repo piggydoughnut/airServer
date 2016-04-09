@@ -1,7 +1,9 @@
 var express = require('express');
 var sanitize = require("mongo-sanitize");
 var Message = require('../models/message');
-import {querySetUp} from "../util/queryHelper";
+var Comment = require('../models/comment');
+import {querySetUp, createId} from "../util/queryHelper";
+import {checkInput} from "../util/messageHelper";
 
 var router = express.Router();
 
@@ -16,8 +18,6 @@ router.get('/', function (req, res) {
         offset: q.offset,
         select: 'description location'
     };
-    console.log(q.limit);
-    console.log(q.offset);
 
     Message.paginate(query, options).then(function (result, err) {
         if (err) {
@@ -31,16 +31,20 @@ router.get('/', function (req, res) {
 
 /* POST Message */
 router.post('/', function (req, res) {
+
+    var q = checkInput(req);
+
     var message = new Message({
         text: req.body.text,
         location: {
-            latitude: req.body.location.latitude,
-            longitude: req.body.location.longitude
+            latitude: q.lat,
+            longitude: q.lng
         },
         validity: req.body.validity,
         user: req.body.user,
         file: req.body.file,
-        description: req.body.text.substr(0, 150)
+        description: q.desc,
+        created_at: new Date()
     });
 
     message.save(function (err) {
@@ -53,6 +57,36 @@ router.post('/', function (req, res) {
             text: message.text,
             _id: message.id,
             user: message.user
+        });
+    });
+});
+
+/* POST Comment on a message */
+router.post('/:id/comments', function (req, res) {
+    if (!Message.find({_id: createId(req.params.id, res)})) {
+        res.status(400).json('Message with id ' + req.params.id + ' does not exist');
+    }
+
+    var q = checkInput(req);
+
+    var comment = new Comment({
+        parent: req.params.id,
+        text: req.body.text,
+        user: req.body.user,
+        description: q.desc,
+        created_at: new Date()
+    });
+
+    comment.save(function (err) {
+        if (err) {
+            console.log(err);
+            res.status(400).json(err);
+            return;
+        }
+        res.status(201).json({
+            text: comment.text,
+            _id: comment.id,
+            user: comment.user
         });
     });
 });
