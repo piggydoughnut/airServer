@@ -1,17 +1,31 @@
 var express = require('express');
 var sanitize = require("mongo-sanitize");
 var Message = require('../models/message');
-import {setUpDb} from '../util/dbHelper';
+import {querySetUp} from "../util/queryHelper";
 
 var router = express.Router();
-var collectionName = 'messages';
 
 
 /* GET Messages */
 router.get('/', function (req, res) {
-    var collection = setUpDb(req, collectionName);
-    collection.find({}, {}, function (e, docs) {
-        res.json(docs);
+
+    var q = querySetUp(req);
+    var query = {parent: null};
+    var options = {
+        limit: q.limit,
+        offset: q.offset,
+        select: 'description location'
+    };
+    console.log(q.limit);
+    console.log(q.offset);
+
+    Message.paginate(query, options).then(function (result, err) {
+        if (err) {
+            console.log(err);
+            res.status(400).json(err);
+            return;
+        }
+        res.json(result);
     });
 });
 
@@ -45,9 +59,23 @@ router.post('/', function (req, res) {
 
 /* GET Message's comments */
 router.get('/:id/comments', function (req, res) {
-    var collection = setUpDb(req, collectionName);
-    collection.find({parent: req.params.id}, {}, function (e, docs) {
-        res.json(docs);
+
+    var q = querySetUp(req);
+    var query = {parent: req.params.id};
+    var options = {
+        limit: q.limit,
+        offset: q.offset,
+        sort: {published_at: -1},
+        select: 'description published_at user'
+    };
+
+    Message.paginate(query, options).then(function (result, err) {
+        if (err) {
+            console.log(err);
+            res.status(400).json(err);
+            return;
+        }
+        res.status(200).json(result);
     });
 });
 

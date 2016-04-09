@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
+var mongoosePaginate = require('mongoose-paginate');
 
 var Schema = mongoose.Schema;
+
 var collectionName = 'messages';
 
 var messageSchema = new Schema({
@@ -25,6 +27,8 @@ var messageSchema = new Schema({
     {
         collection: collectionName
     });
+
+messageSchema.plugin(mongoosePaginate);
 
 // add custom methods
 // Get city and country

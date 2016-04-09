@@ -9,10 +9,6 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var mongo = require('mongodb');
-var monk = require('monk');
-var db = monk('localhost:27017/airdb');
-
 var mongoose = require('mongoose');
 mongoose.connect('localhost:27017/airdb');
 
@@ -36,12 +32,6 @@ app.use(bodyParser.urlencoded({ limit: '4mb',extended: false }));
 
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-//we're adding db object to every HTTP request our app makes
-app.use(function(req,res,next){
-    req.db = db;
-    next();
-});
 
 app.use('/', routes);
 app.use('/users', users);

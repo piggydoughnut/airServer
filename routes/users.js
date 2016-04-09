@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-import {setUpDb, createId} from "../util/dbHelper";
+import {createId} from "../util/queryHelper";
 
 var collectionName = 'users';
 
