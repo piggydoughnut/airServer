@@ -1,0 +1,146 @@
+# GPS Pinned messaging application API
+
+# Group Overview
+
+## Goal
+This API serves the GPS pinned messaging mobile application and GPS pinned web server
+
+# Group Messages
+
+## Messages [/messages{?page,limit}]
+Message list
+
+### Get Messages [GET]
+Get a list of messages.
++ Parameters
+
+    + page: `1` (integer, optional) - default value is 1.
+    + limit: `10` (integer, optional) - default value is 10.
+
++ Response 200 (application/json)
+
+    + Attributes
+        + _id: 1 (required, number) - Unique identifier
+        + description: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500  (required) - First 150 symbols of the message text
+        - location: (required) - location where the message is pinned
+            - longitude: 14.124124124,
+            - latitude: 14.123123123
+
+
+### Post a message [POST]
+Post a message
++ Request with body (application/json)
+
+    + Body
+
+            {
+                "text": "My new message",
+                "location": {
+                    "latitude": 12.123123123,
+                    "longitude": 13.123123123
+                },
+                "validity": 5,
+                "user": {
+                    "id": 3,
+                    "username": "michael"
+                },
+                "file": {
+                    "data": "base64EncodedString"
+                }
+            }
+
++ Response 201
+
++ Request without body (application/json)
+
++ Response 400 (application/json)
+
+    + Body
+
+            {
+                "message": "Message validation failed"
+            }
+
+## Messages with comments [/messages/{id}/comments{?page,limit}]
+Messages can have comments
+
+### Get comments for message [GET]
+Get a list of comments for a given message.
++ Parameters
+
+    + id: `57091a366cfe0fb52f82e17f` (string, required) - id of the message we are inquiring about.
+    + page: `1` (integer, optional) - default value is 1.
+    + limit: `10` (integer, optional) - default value is 10.
+
++ Response 200 (application/json)
+
+    + Body
+            {
+               "docs":[
+                  {
+                     "_id":"5708ff32eee2965b615b6309",
+                     "description":"3- Comment to the message Lorem",
+                     "published_at":"2014-11-11T14:40:51.620Z",
+                     "user":{
+                        "username":"michael",
+                        "id":"1"
+                     }
+                  },
+                  {
+                     "_id":"5708ff14eee2965b615b6308",
+                     "description":"2- Comment to the message Lorem",
+                     "published_at":"2014-11-11T10:40:51.620Z",
+                     "user":{
+                        "username":"michael",
+                        "id":"1"
+                     }
+                  },
+                  {
+                     "_id":"5708ec81eee2965b615b6307",
+                     "description":"Comment to the message Lorem",
+                     "published_at":"2014-11-11T08:40:51.620Z",
+                     "user":{
+                        "username":"michael",
+                        "id":"1"
+                     }
+                  },
+                  {
+                     "_id":"57091a366cfe0fb52f82e17f",
+                     "description":"test comment",
+                     "user":{
+                        "id":"2",
+                        "username":"Amy"
+                     }
+                  }
+               ],
+               "total":4,
+               "limit":10,
+               "offset":0
+            }
+
+
+### Post a comment for message [POST]
+Post a comment for message
++ Request with body (application/json)
+
+    + Body
+
+            {
+                "text": "I am commenting on your message",
+                "user": {
+                    "id": 3,
+                    "username": "michael"
+                }
+            }
+
++ Response 201
+
++ Request without body (application/json)
+
++ Response 400 (application/json)
+
+    + Body
+
+            {
+                "message": "Message validation failed"
+            }
