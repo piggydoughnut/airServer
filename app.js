@@ -1,3 +1,7 @@
+require("babel-core/register")({
+  "presets": ["es2015"]
+});
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -11,7 +15,6 @@ var db = monk('localhost:27017/airdb');
 
 var mongoose = require('mongoose');
 mongoose.connect('localhost:27017/airdb');
-
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
