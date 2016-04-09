@@ -1,6 +1,6 @@
 var mongo = require('mongodb');
 
-const LIMIT = 1;
+const LIMIT = 10;
 
 function querySetUp(req) {
     var limit = (typeof req.query.limit != 'undefined') ? parseInt(req.query.limit) : LIMIT;
