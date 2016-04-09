@@ -6,7 +6,35 @@ import {querySetUp, createId} from "../util/queryHelper";
 import {checkInput} from "../util/messageHelper";
 
 var router = express.Router();
-
+/* GET Messages */
+router.get('/:id', function (req, res) {
+    Message.findOne({_id: createId(req.params.id, res)}, function(err, docs){
+        if (err) {
+            res.status(400).json(err);
+            return;
+        }
+        if(docs){
+            var query = {parent: req.params.id};
+            var options = {
+                limit: 10,
+                sort: {published_at: -1},
+                select: 'description published_at user'
+            };
+            Message.paginate(query, options).then(function (result, err) {
+                if (err) {
+                    res.status(400).json(err);
+                    return;
+                }
+                return res.json({
+                    message: docs,
+                    comments: result
+                });
+            });
+        } else {
+            res.status(400).json('Message with id '+ req.params.id + ' does not exist ');
+        }
+    });
+});
 
 /* GET Messages */
 router.get('/', function (req, res) {
