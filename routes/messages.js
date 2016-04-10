@@ -25,6 +25,7 @@ router.get('/:id', function (req, res) {
                     res.status(400).json(err);
                     return;
                 }
+                result.docs = result.docs.reverse();
                 return res.json({
                     message: docs,
                     comments: result
@@ -102,7 +103,7 @@ router.post('/:id/comments', function (req, res) {
         text: req.body.text,
         user: req.body.user,
         description: q.desc,
-        created_at: new Date()
+        published_at: new Date()
     });
 
     comment.save(function (err) {
@@ -137,6 +138,7 @@ router.get('/:id/comments', function (req, res) {
             res.status(400).json(err);
             return;
         }
+        result.docs = result.docs.reverse();
         res.status(200).json(result);
     });
 });
