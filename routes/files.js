@@ -21,7 +21,7 @@ router.post('/', multipartMiddleware, function (req, res) {
         console.log('no files to upload');
         return res.status(400).json('no files to upload');
     }
-    if(!req.files.hasOwnProperty('thumb') || !req.files.hasOwnProperty('object')){
+    if (!req.files.hasOwnProperty('thumb') || !req.files.hasOwnProperty('object')) {
         return res.status(400).json('incorrect files for upload');
     }
     if (typeof req.body.user_id != 'undefined' && validator.isAlphanumeric(req.body.user_id)) {
@@ -61,8 +61,13 @@ router.post('/', multipartMiddleware, function (req, res) {
         });
 });
 
-router.get('/gallery', function(req, res){
-    var q = querySetUp(req);
+router.get('/gallery', function (req, res) {
+    try {
+        var q = querySetUp(req);
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json(error);
+    }
     var query = {user: null};
     var options = {
         limit: q.limit,
@@ -120,10 +125,10 @@ function getFileExtension(filename) {
     return filename.substring(filename.lastIndexOf(".") + 1);
 }
 
-function ObjectLength( object ) {
+function ObjectLength(object) {
     var length = 0;
-    for( var key in object ) {
-        if( object.hasOwnProperty(key) ) {
+    for (var key in object) {
+        if (object.hasOwnProperty(key)) {
             ++length;
         }
     }
