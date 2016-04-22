@@ -33,6 +33,13 @@ app.use(bodyParser.urlencoded({ limit: '4mb',extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// allow requests from frontend
+app.use(function(req, res, next) {
+  res.set("Access-Control-Allow-Origin", "http://airweb");
+  res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.use('/', routes);
 app.use('/users', users);
 app.use('/messages', messages);

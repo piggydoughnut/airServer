@@ -23,7 +23,7 @@ router.get('/', function (req, res) {
             res.status(400).json(err);
             return;
         }
-        res.json(result);
+        res.status(200).json(result);
     });
 });
 
@@ -75,7 +75,7 @@ router.get('/user/:id', function (req, res) {
             res.status(400).json(err);
             return;
         }
-        res.json(result);
+        res.status(200).json(result);
     });
 });
 
