@@ -7,6 +7,7 @@ var fs = require('fs');
 var config = require('../config/config');
 var GalleryFile = require('../models/galleryFile');
 var validator = require('validator');
+var im = require('imagemagick');
 
 var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
@@ -92,12 +93,21 @@ function processFile(file) {
         }
         fs.readFile(file.path, function (err, data) {
             var filename = randomStr() + '.' + getFileExtension(file.originalFilename);
-            var newPath = appDir + config.file_upload_folder + '/' + filename;
-            fs.writeFile(newPath, data, function (err) {
+            var relPath = config.file_upload_folder + '/' + filename;
+            var absPath = appDir + '/public/' + config.file_upload_folder + '/' + filename;
+            if (file.type == 'image/png' || file.type == 'image/jpeg') {
+                try{
+                    resizeImage(absPath);
+                }catch(err){
+                    throw err;
+                }
+            }
+
+            fs.writeFile(absPath, data, function (err) {
                 if (err) {
                     reject(err);
                 }
-                resolve(newPath);
+                resolve(config.domain + relPath);
             });
         });
     });
@@ -134,5 +144,18 @@ function ObjectLength(object) {
     }
     return length;
 };
+
+function resizeImage(absPath) {
+
+    im.resize({
+        srcPath: absPath,
+        dstPath: absPath,
+        width: 256
+    }, function (err, stdout, stderr) {
+        if (err) {
+            throw err;
+        }
+    });
+}
 
 module.exports = router;
