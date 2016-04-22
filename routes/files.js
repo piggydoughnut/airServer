@@ -13,6 +13,18 @@ var appDir = process.env.PWD;
 
 router.post('/', multipartMiddleware, function (req, res) {
     var thumb_file_path = '';
+    var user_id = null;
+
+    if (ObjectLength(req.files) != 2) {
+        console.log('no files to upload');
+        return res.status(400).json('no files to upload');
+    }
+    if(!req.files.hasOwnProperty('thumb') || !req.files.hasOwnProperty('object')){
+        return res.status(400).json('incorrect files for upload');
+    }
+    if (typeof req.body.user_id != 'undefined' && validator.isAlphanumeric(req.body.user_id)) {
+        user_id = req.body.user_id;
+    }
 
     processFile(req.files.thumb)
         .then(function (path) {
@@ -24,27 +36,35 @@ router.post('/', multipartMiddleware, function (req, res) {
                     var galleryFile = new GalleryFile({
                         filename: checkFileName(req.body.filename),
                         thumb_file_path: thumb_file_path,
-                        obj_file_path: path
+                        obj_file_path: path,
+                        uploaded_at: new Date(),
+                        user_id: user_id
                     });
                     galleryFile.save(function (err) {
                         if (err) {
+                            console.log(error);
                             return res.status(400).json(err);
                         }
                         return res.status(200).send();
                     });
                 })
                 .catch(error => {
+                    console.log(error);
                     return res.status(400).json(error);
                 });
         })
         .catch(error => {
+            console.log(error);
             return res.status(400).json(error);
         });
 });
 
 function processFile(file) {
     return new Promise(function (resolve, reject) {
-        
+        console.log(file);
+        if (typeof file == 'undefined' || !file.hasOwnProperty('path')) {
+            reject('file not defined');
+        }
         fs.readFile(file.path, function (err, data) {
             var filename = randomStr() + '.' + getFileExtension(file.originalFilename);
             var newPath = appDir + config.file_upload_folder + '/' + filename;
@@ -79,5 +99,15 @@ function randomStr() {
 function getFileExtension(filename) {
     return filename.substring(filename.lastIndexOf(".") + 1);
 }
+
+function ObjectLength( object ) {
+    var length = 0;
+    for( var key in object ) {
+        if( object.hasOwnProperty(key) ) {
+            ++length;
+        }
+    }
+    return length;
+};
 
 module.exports = router;

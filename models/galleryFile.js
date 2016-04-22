@@ -9,7 +9,8 @@ var gallerySchema = new Schema({
         filename: {type: String, required: true},
         thumb_file_path: {type: String, required: true},
         obj_file_path: {type: String, required: true},
-        uploaded_at: Date
+        uploaded_at: {type: Date, required: true},
+        user_id: String
     },
     {
         collection: collectionName
