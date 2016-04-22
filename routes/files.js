@@ -1,3 +1,5 @@
+import {querySetUp} from "../util/queryHelper";
+
 var express = require('express');
 var router = express.Router();
 var path = require('path');
@@ -57,6 +59,24 @@ router.post('/', multipartMiddleware, function (req, res) {
             console.log(error);
             return res.status(400).json(error);
         });
+});
+
+router.get('/gallery', function(req, res){
+    var q = querySetUp(req);
+    var query = {user: null};
+    var options = {
+        limit: q.limit,
+        offset: q.offset,
+    };
+
+    GalleryFile.paginate(query, options).then(function (result, err) {
+        if (err) {
+            console.log(err);
+            res.status(400).json(err);
+            return;
+        }
+        res.status(200).json(result);
+    });
 });
 
 function processFile(file) {
