@@ -22,6 +22,7 @@ var messageSchema = new Schema({
         },
         file: Object,
         views_count: Number,
+        comments_count: Number,
         created_at: Date
     },
     {

@@ -14,7 +14,7 @@ router.get('/', function (req, res) {
     var options = {
         limit: q.limit,
         offset: q.offset,
-        select: 'description location'
+        select: 'description location created_at'
     };
 
     Message.paginate(query, options).then(function (result, err) {
@@ -39,7 +39,7 @@ router.get('/:id', function (req, res) {
             var options = {
                 limit: 10,
                 sort: {published_at: -1},
-                select: 'description published_at user'
+                select: 'description created_at user'
             };
             Message.paginate(query, options).then(function (result, err) {
                 if (err) {
@@ -66,7 +66,7 @@ router.get('/user/:id', function (req, res) {
     var options = {
         limit: q.limit,
         offset: q.offset,
-        select: 'description location'
+        select: 'description location created_at'
     };
 
     Message.paginate(query, options).then(function (result, err) {
@@ -94,7 +94,9 @@ router.post('/', function (req, res) {
         user: req.body.user,
         file: req.body.file,
         description: q.desc,
-        created_at: new Date()
+        created_at: new Date(),
+        view_count: 0,
+        comments_count: 0
     });
 
     message.save(function (err) {
@@ -150,7 +152,7 @@ router.get('/:id/comments', function (req, res) {
         limit: q.limit,
         offset: q.offset,
         sort: {published_at: -1},
-        select: 'description published_at user'
+        select: 'description location created_at'
     };
 
     Message.paginate(query, options).then(function (result, err) {

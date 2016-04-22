@@ -14,7 +14,7 @@ var commentSchema = new Schema({
             id: {type: String, required: true},
             username: {type: String, required: true}
         },
-        published_at: Date
+        created_at: Date
     },
     {
         collection: collectionName
