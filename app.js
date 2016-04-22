@@ -15,6 +15,7 @@ mongoose.connect('localhost:27017/airdb');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var messages = require('./routes/messages');
+var filesEndpoint = require('./routes/files');
 
 // It instantiates Express and assigns our app variable to it.
 // The next section uses this variable to configure a bunch of Express stuff.
@@ -43,6 +44,7 @@ app.use(function(req, res, next) {
 app.use('/', routes);
 app.use('/users', users);
 app.use('/messages', messages);
+app.use('/files', filesEndpoint);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
