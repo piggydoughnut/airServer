@@ -7,6 +7,27 @@ import {checkInput} from "../util/messageHelper";
 
 var router = express.Router();
 /* GET Messages */
+router.get('/', function (req, res) {
+
+    var q = querySetUp(req);
+    var query = {parent: null};
+    var options = {
+        limit: q.limit,
+        offset: q.offset,
+        select: 'description location'
+    };
+
+    Message.paginate(query, options).then(function (result, err) {
+        if (err) {
+            console.log(err);
+            res.status(400).json(err);
+            return;
+        }
+        res.json(result);
+    });
+});
+
+/* GET Message */
 router.get('/:id', function (req, res) {
     Message.findOne({_id: createId(req.params.id, res)}, function(err, docs){
         if (err) {
@@ -37,11 +58,11 @@ router.get('/:id', function (req, res) {
     });
 });
 
-/* GET Messages */
-router.get('/', function (req, res) {
+/* GET Messages by User */
+router.get('/user/:id', function (req, res) {
 
     var q = querySetUp(req);
-    var query = {parent: null};
+    var query = {'user.id': req.params.id, parent: null};
     var options = {
         limit: q.limit,
         offset: q.offset,
