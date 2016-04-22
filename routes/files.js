@@ -68,7 +68,7 @@ router.get('/gallery', function (req, res) {
         console.log(error);
         return res.status(400).json(error);
     }
-    var query = {user: null};
+    var query = {user_id: null};
     var options = {
         limit: q.limit,
         offset: q.offset,
