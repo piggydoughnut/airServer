@@ -84,7 +84,7 @@ router.get('/gallery', function (req, res) {
 });
 
 router.post('/gallery/user', function (req, res) {
-    if(isEmptyObject(req.body)){
+    if (isEmptyObject(req.body)) {
         return json400(res, 'nothing to post');
     }
     var filename = Number.isFinite(req.body.filename) ? req.body.filename : validator.escape(req.body.filename);
@@ -99,23 +99,42 @@ router.post('/gallery/user', function (req, res) {
         checkFilePath(req.body.obj_file_path);
         checkFilePath(req.body.thumb_file_path);
 
-        var galleryFile = new GalleryFile({
-            filename: filename,
-            obj_file_path: req.body.obj_file_path,
+        GalleryFile.findOne({
             thumb_file_path: req.body.thumb_file_path,
-            uploaded_at: new Date(),
+            obj_file_path: req.body.obj_file_path,
             user_id: user_id
-        });
-
-        galleryFile.save(function (err) {
+        }, function (err, docs) {
             if (err) {
-                console.log(err);
                 return json400(res, err);
             }
-            return json200(res, 'Added to you gallery');
+            if(docs) {
+                return json200(res, {
+                    msg: "This file is already in your gallery",
+                    thumb_file_path: docs.thumb_file_path
+                });
+            }
+            var galleryFile = new GalleryFile({
+                filename: filename,
+                obj_file_path: req.body.obj_file_path,
+                thumb_file_path: req.body.thumb_file_path,
+                uploaded_at: new Date(),
+                user_id: user_id
+            });
+            galleryFile.save(function (err, doc) {
+                if (err) {
+                    console.log(err);
+                    return json400(res, err);
+                }
+                var response = {
+                    msg: 'Added to your gallery',
+                    thumb_file_path: doc.thumb_file_path
+                };
+                return json200(res, response);
+            });
         });
+
     } catch (err) {
-        if(err.code=='ENOENT'){
+        if (err.code == 'ENOENT') {
             return json400(res, 'Incorrect path');
         }
         return json400(res, err);
