@@ -1,6 +1,6 @@
 import {querySetUp, createId} from "../util/queryHelper";
 import {json400, json200} from "../util/requestHelper";
-import {objectLength} from "../util/commonHelper";
+import {objectLength, isEmptyObject} from "../util/commonHelper";
 import {processFile, checkFilePath, checkFileName} from "../util/fileHelper";
 
 var express = require('express');
@@ -84,7 +84,9 @@ router.get('/gallery', function (req, res) {
 });
 
 router.post('/gallery/user', function (req, res) {
-    console.log(req.body);
+    if(isEmptyObject(req.body)){
+        return json400(res, 'nothing to post');
+    }
     var filename = Number.isFinite(req.body.filename) ? req.body.filename : validator.escape(req.body.filename);
 
     try {

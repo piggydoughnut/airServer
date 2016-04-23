@@ -8,4 +8,9 @@ function objectLength(object) {
     return length;
 }
 
-module.exports = {objectLength};
+var isEmptyObject = function (obj) {
+    for (var property in obj)
+        return false;
+    return true;
+};
+module.exports = {objectLength, isEmptyObject};
