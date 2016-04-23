@@ -83,6 +83,31 @@ router.get('/gallery', function (req, res) {
     });
 });
 
+router.get('/gallery/user/:id', function (req, res) {
+    var id = validator.escape(req.params.id);
+
+    try {
+        var q = querySetUp(req);
+    } catch (error) {
+        console.log(error);
+        return json400(res, error);
+    }
+    var query = {user_id: id};
+    var options = {
+        limit: q.limit,
+        offset: q.offset
+    };
+
+    GalleryFile.paginate(query, options).then(function (result, err) {
+        if (err) {
+            console.log(err);
+            json400(res, err);
+            return;
+        }
+        return json200(res, result);
+    });
+});
+
 router.post('/gallery/user', function (req, res) {
     if (isEmptyObject(req.body)) {
         return json400(res, 'nothing to post');
