@@ -38,7 +38,7 @@ router.get('/:id', function (req, res) {
             var query = {parent: req.params.id};
             var options = {
                 limit: 10,
-                sort: {published_at: -1},
+                sort: {created_at: -1},
                 select: 'description created_at user'
             };
             Message.paginate(query, options).then(function (result, err) {
@@ -126,7 +126,7 @@ router.post('/:id/comments', function (req, res) {
         text: req.body.text,
         user: req.body.user,
         description: q.desc,
-        published_at: new Date()
+        created_at: new Date()
     });
 
     comment.save(function (err) {
@@ -151,8 +151,8 @@ router.get('/:id/comments', function (req, res) {
     var options = {
         limit: q.limit,
         offset: q.offset,
-        sort: {published_at: -1},
-        select: 'description location created_at'
+        sort: {created_at: -1},
+        select: 'description user created_at'
     };
 
     Message.paginate(query, options).then(function (result, err) {

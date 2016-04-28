@@ -68,7 +68,8 @@ function checkFilePath(filepath) {
 }
 
 function checkFileName(filename) {
-    if (filename != 'undefined' && validator.isAlphanumeric(filename)) {
+    if (typeof filename != 'undefined') {
+        validator.escape(filename);
         return filename;
     } else {
         return randomStr();

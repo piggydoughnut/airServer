@@ -17,8 +17,7 @@ router.post('/form', multipartMiddleware, function (req, res) {
     var user_id = null;
 
     if (objectLength(req.files) != 2) {
-        console.log('no files to upload');
-        return json400('no files to upload');
+        return json400(res, 'no files to upload');
     }
     if (!req.files.hasOwnProperty('thumb') || !req.files.hasOwnProperty('object')) {
         return json400(res, 'incorrect files for upload');
@@ -46,7 +45,7 @@ router.post('/form', multipartMiddleware, function (req, res) {
                             console.log(error);
                             return json400(res, err);
                         }
-                        return json200(res, '');
+                        return json200(res, {msg: 'Your obj was successfully uploaded.'});
                     });
                 })
                 .catch(error => {
