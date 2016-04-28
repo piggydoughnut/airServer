@@ -1,6 +1,7 @@
 var express = require('express');
 var sanitize = require("mongo-sanitize");
 var Message = require('../models/message');
+var MessageObj = require('../models/messageObj');
 var Comment = require('../models/comment');
 import {querySetUp, createId} from "../util/queryHelper";
 import {checkInput} from "../util/messageHelper";
@@ -83,21 +84,13 @@ router.get('/user/:id', function (req, res) {
 router.post('/', function (req, res) {
 
     var q = checkInput(req);
-
-    var message = new Message({
-        text: req.body.text,
-        location: {
-            latitude: q.lat,
-            longitude: q.lng
-        },
-        validity: req.body.validity,
-        user: req.body.user,
-        file: req.body.file,
-        description: q.desc,
-        created_at: new Date(),
-        view_count: 0,
-        comments_count: 0
-    });
+    var message = {};
+    if(req.body.hasOwnProperty('obj')){
+        console.log('yes');
+        message = setMessageObj(req, q);
+    } else {
+        message = setMessage(req, q);
+    }
 
     message.save(function (err) {
         if (err) {
@@ -112,6 +105,38 @@ router.post('/', function (req, res) {
         });
     });
 });
+
+function setMessage(req, q) {
+    return new Message({
+        text: req.body.text,
+        location: {
+            latitude: q.lat,
+            longitude: q.lng
+        },
+        validity: req.body.validity,
+        user: req.body.user,
+        file: req.body.file,
+        description: q.desc,
+        created_at: new Date(),
+        view_count: 0,
+        comments_count: 0
+    });
+}
+
+function setMessageObj(req, q) {
+    return new MessageObj({
+        text: req.body.text,
+        location: {
+            latitude: q.lat,
+            longitude: q.lng
+        },
+        validity: req.body.validity,
+        user: req.body.user,
+        obj: req.body.obj,
+        created_at: new Date(),
+        view_count: 0
+    });
+}
 
 /* POST Comment on a message */
 router.post('/:id/comments', function (req, res) {
