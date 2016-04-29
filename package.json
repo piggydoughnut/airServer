@@ -17,6 +17,7 @@
     "jade": "~1.11.0",
     "mongo-sanitize": "^1.0.0",
     "mongodb": "1.4.x",
+    "mongoose": "^4.4.14",
     "mongoose-paginate": "^5.0.0",
     "monk": "~1.0.1",
     "morgan": "~1.6.1",
