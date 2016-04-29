@@ -3,6 +3,7 @@ var sanitize = require("mongo-sanitize");
 var Message = require('../models/message');
 var MessageObj = require('../models/messageObj');
 var Comment = require('../models/comment');
+var Config = require('../config/config');
 import {querySetUp, createId} from "../util/queryHelper";
 import {checkInput} from "../util/messageHelper";
 
@@ -10,8 +11,24 @@ var router = express.Router();
 /* GET Messages */
 router.get('/', function (req, res) {
 
+    if (!req.query.hasOwnProperty('lat') || !req.query.hasOwnProperty('lng') || isNaN(req.query.lat) || isNaN(req.query.lng)) {
+        return res.status(400).json('Input coordinates are not set');
+    }
     var q = querySetUp(req);
-    var query = {parent: null};
+    var query = {
+        parent: null,
+        loc: {
+            $geoWithin: {
+                $centerSphere: [
+                    [
+                        parseFloat(req.query.lng),
+                        parseFloat(req.query.lat)
+                    ],
+                    Config.radiusRes
+                ]
+            }
+        }
+    };
     var options = {
         limit: q.limit,
         offset: q.offset,
@@ -30,12 +47,12 @@ router.get('/', function (req, res) {
 
 /* GET Message */
 router.get('/:id', function (req, res) {
-    Message.findOne({_id: createId(req.params.id, res)}, function(err, docs){
+    Message.findOne({_id: createId(req.params.id, res)}, function (err, docs) {
         if (err) {
             res.status(400).json(err);
             return;
         }
-        if(docs){
+        if (docs) {
             var query = {parent: req.params.id};
             var options = {
                 limit: 10,
@@ -54,7 +71,7 @@ router.get('/:id', function (req, res) {
                 });
             });
         } else {
-            res.status(400).json('Message with id '+ req.params.id + ' does not exist ');
+            res.status(400).json('Message with id ' + req.params.id + ' does not exist ');
         }
     });
 });
@@ -85,7 +102,7 @@ router.post('/', function (req, res) {
 
     var q = checkInput(req);
     var message = {};
-    if(req.body.hasOwnProperty('obj')){
+    if (req.body.hasOwnProperty('obj')) {
         console.log('yes');
         message = setMessageObj(req, q);
     } else {
