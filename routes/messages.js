@@ -103,7 +103,6 @@ router.post('/', function (req, res) {
     var q = checkInput(req);
     var message = {};
     if (req.body.hasOwnProperty('obj')) {
-        console.log('yes');
         message = setMessageObj(req, q);
     } else {
         message = setMessage(req, q);
