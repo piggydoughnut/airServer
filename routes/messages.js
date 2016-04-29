@@ -32,7 +32,7 @@ router.get('/', function (req, res) {
     var options = {
         limit: q.limit,
         offset: q.offset,
-        select: 'description loc created_at'
+        select: 'description loc object created_at'
     };
 
     Message.paginate(query, options).then(function (result, err) {
@@ -115,9 +115,11 @@ router.post('/', function (req, res) {
             return;
         }
         res.status(200).json({
-            text: message.text,
+            description: message.description,
             _id: message.id,
-            user: message.user
+            user: message.user,
+            loc: message.loc,
+            object: message.obj ? true : false
         });
     });
 });
@@ -138,6 +140,7 @@ function setMessage(req, q) {
         description: q.desc,
         created_at: new Date(),
         view_count: 0,
+        object: false,
         comments_count: 0
     });
 }
@@ -145,6 +148,7 @@ function setMessage(req, q) {
 function setMessageObj(req, q) {
     return new MessageObj({
         text: req.body.text,
+        description: q.desc,
         loc: {
             type: "Point",
             coordinates: [
@@ -154,6 +158,7 @@ function setMessageObj(req, q) {
         validity: req.body.validity,
         user: req.body.user,
         obj: req.body.obj,
+        object: true,
         created_at: new Date(),
         view_count: 0
     });

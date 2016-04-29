@@ -7,6 +7,7 @@ var collectionName = 'messages';
 
 var messageObjSchema = new Schema({
         text: String,
+        description: String,
         loc: {
             coordinates: {type: Array, required: true},
             type: {type: String, required: true},
@@ -20,6 +21,7 @@ var messageObjSchema = new Schema({
             username: {type: String, required: true}
         },
         obj: Object,
+        object: Boolean,
         views_count: Number,
         created_at: Date
     },

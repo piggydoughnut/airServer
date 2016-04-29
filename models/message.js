@@ -21,6 +21,7 @@ var messageSchema = new Schema({
             username: {type: String, required: true}
         },
         file: Object,
+        object: Boolean,
         views_count: Number,
         comments_count: Number,
         created_at: Date
