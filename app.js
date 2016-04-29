@@ -10,6 +10,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var mongoose = require('mongoose');
+// the port might change
 mongoose.connect('localhost:27017/airdb');
 
 var routes = require('./routes/index');
