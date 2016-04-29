@@ -1,6 +1,7 @@
 require("babel-core/register")({
   "presets": ["es2015"]
 });
+require('babel-polyfill');
 
 var express = require('express');
 var path = require('path');
