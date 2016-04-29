@@ -3,10 +3,9 @@ function checkInput(req) {
     var lat = '';
     var lng = '';
     var desc = '';
-
-    if (typeof req.body.location != 'undefined') {
-        lat = req.body.location.latitude;
-        lng = req.body.location.longitude
+    if (typeof req.body.loc != 'undefined' && typeof req.body.loc.coordinates != 'undefined') {
+        lat = req.body.loc.coordinates[1];
+        lng = req.body.loc.coordinates[0];
     }
     if (typeof req.body.text != 'undefined') {
         desc = req.body.text.substr(0, 150);

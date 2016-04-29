@@ -127,7 +127,7 @@ function setMessage(req, q) {
     return new Message({
         text: req.body.text,
         loc: {
-            type: q.loc.type,
+            type: "Point",
             coordinates: [
                 q.lng, q.lat
             ],
@@ -147,7 +147,7 @@ function setMessageObj(req, q) {
     return new MessageObj({
         text: req.body.text,
         loc: {
-            type: q.loc.type,
+            type: "Point",
             coordinates: [
                 q.lng, q.lat
             ],
