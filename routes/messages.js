@@ -15,7 +15,7 @@ router.get('/', function (req, res) {
     var options = {
         limit: q.limit,
         offset: q.offset,
-        select: 'description location created_at'
+        select: 'description loc created_at'
     };
 
     Message.paginate(query, options).then(function (result, err) {
@@ -67,7 +67,7 @@ router.get('/user/:id', function (req, res) {
     var options = {
         limit: q.limit,
         offset: q.offset,
-        select: 'description location created_at'
+        select: 'description loc created_at'
     };
 
     Message.paginate(query, options).then(function (result, err) {
@@ -109,8 +109,11 @@ router.post('/', function (req, res) {
 function setMessage(req, q) {
     return new Message({
         text: req.body.text,
-        location: {
-            latitude: q.lat,
+        loc: {
+            type: q.loc.type,
+            coordinates: [
+                q.lng, q.lat
+            ],
             longitude: q.lng
         },
         validity: req.body.validity,
@@ -126,9 +129,11 @@ function setMessage(req, q) {
 function setMessageObj(req, q) {
     return new MessageObj({
         text: req.body.text,
-        location: {
-            latitude: q.lat,
-            longitude: q.lng
+        loc: {
+            type: q.loc.type,
+            coordinates: [
+                q.lng, q.lat
+            ],
         },
         validity: req.body.validity,
         user: req.body.user,

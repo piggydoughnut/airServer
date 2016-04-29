@@ -7,9 +7,9 @@ var collectionName = 'messages';
 
 var messageObjSchema = new Schema({
         text: String,
-        location: {
-            longitude: {type: Number, required: true},
-            latitude: {type: Number, required: true},
+        loc: {
+            coordinates: {type: Array, required: true},
+            type: {type: String, required: true},
             city: String,
             country: String
         },
