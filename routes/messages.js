@@ -174,30 +174,37 @@ router.post('/', function (req, res) {
 
 /* POST Comment on a message */
 router.post('/:id/comments', function (req, res) {
-    if (!Message.find({_id: createId(req.params.id, res)})) {
-        res.status(400).json('Message with id ' + req.params.id + ' does not exist');
-    }
-
-    var q = checkInput(req);
-
-    var comment = new Comment({
-        parent: req.params.id,
-        text: req.body.text,
-        user: req.body.user,
-        description: q.desc,
-        created_at: new Date()
-    });
-
-    comment.save(function (err) {
-        if (err) {
-            console.log(err);
-            res.status(400).json(err);
-            return;
+    Message.findOne({_id: createId(req.params.id, res)}, function(err, message) {
+        if(!message){
+            return res.status(400).json('Message with id ' + req.params.id + ' does not exist');
         }
-        res.status(201).json({
-            text: comment.text,
-            _id: comment.id,
-            user: comment.user
+        var q = checkInput(req);
+
+        var comment = new Comment({
+            parent: req.params.id,
+            text: req.body.text,
+            user: req.body.user,
+            description: q.desc,
+            created_at: new Date()
+        });
+
+        comment.save(function (err) {
+            if (err) {
+                console.log(err);
+                res.status(400).json(err);
+                return;
+            }
+            message.comments_count = message.comments_count + 1;
+            message.save(function(err){
+                if(err){
+                    console.log(err);
+                }
+            });
+            return res.status(201).json({
+                text: comment.text,
+                _id: comment.id,
+                user: comment.user
+            });
         });
     });
 });
