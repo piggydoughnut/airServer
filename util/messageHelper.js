@@ -1,6 +1,5 @@
 var Message = require('../models/message');
 var MessageObj = require('../models/messageObj');
-var View = require('../models/view');
 
 function checkInput(req) {
 
@@ -57,40 +56,14 @@ function setMessageObj(req, q) {
     });
 }
 
-function checkView(message, user_id) {
-    View.findOne({user_id: user_id, message_id: message._id}, function (err, result) {
+function updateViewCountMessage(message) {
+    var conditions = {_id: message._id};
+    var update = {$inc: {views_count: 1}};
+    Message.update(conditions, update, [], function (err) {
         if (err) {
             console.log(err);
         }
-        if (!result) {
-            updateViewCountMessage(message);
-        }
-        var view = setView(message._id, user_id);
-        view.save(function (err) {
-            if (err) {
-                console.log(err);
-            }
-        });
     });
 }
 
-function updateViewCountMessage(message) {
-    console.log('updating');
-    var conditions = {_id: message._id};
-    var update = {$inc: {views_count: 1}};
-    Message.update(conditions, update, [], function(err){
-        console.log('updated');
-        if(err) {
-            console.log(err);
-        }
-    });
-}
-function setView(message_id, user_id) {
-    return new View({
-        message_id: message_id,
-        user_id: user_id,
-        created_at: new Date()
-    })
-}
-
-module.exports = {checkInput, setMessage, setMessageObj, setView, checkView};
+module.exports = {checkInput, setMessage, setMessageObj, updateViewCountMessage};

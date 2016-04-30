@@ -1,14 +1,17 @@
 var express = require('express');
 var sanitize = require("mongo-sanitize");
 var Message = require('../models/message');
-var MessageObj = require('../models/messageObj');
-var View = require('../models/view');
 var Comment = require('../models/comment');
 var Config = require('../config/config');
-import {querySetUp, createId} from "../util/queryHelper";
-import {checkInput, setMessage, setMessageObj, setView, checkView} from "../util/messageHelper";
+var View = require('../models/view');
 
+import {querySetUp, createId} from "../util/queryHelper";
+import {checkView} from "../util/viewHelper";
+import {checkInput, setMessage, setMessageObj} from "../util/messageHelper";
+
+var async = require('async');
 var router = express.Router();
+
 /* GET Messages */
 router.get('/', function (req, res) {
 
@@ -51,7 +54,7 @@ router.get('/:id', function (req, res) {
 
     /** For now since there is no authentication */
     var user_id = '56ebe2c5871fc6eb9cd08bcc';
-    
+
     Message.findOne({_id: createId(req.params.id, res)}, function (err, message) {
         if (err) {
             res.status(400).json(err);
@@ -60,7 +63,7 @@ router.get('/:id', function (req, res) {
         if (message) {
 
             checkView(message, user_id);
-            
+
             /** Looking for message's comments **/
             var query = {parent: req.params.id};
             var options = {
@@ -97,12 +100,46 @@ router.get('/user/:id', function (req, res) {
     };
 
     Message.paginate(query, options).then(function (result, err) {
+
         if (err) {
             console.log(err);
             res.status(400).json(err);
             return;
         }
-        res.status(200).json(result);
+        var newDocs = [];
+
+        var getCount = function(entry, index, callback){
+            View.findOne({user_id: req.params.id, message_id: entry._id}, 'created_at', {sort: {'created_at': -1}}, function (err, res) {
+                if (err) {
+                    console.log(err);
+                }
+                if (!res) {
+                    res = entry;
+                }
+                Comment.count({parent: entry._id, created_at: {$gte: res.created_at.toISOString()}, 'user.id': {$ne: req.params.id}}, function (err, count) {
+                    if (err) {
+                        console.log(err);
+                    }
+
+                    newDocs[index] = {};
+                    newDocs[index]._id = entry._id;
+                    newDocs[index].description = entry.description;
+                    newDocs[index].created_at = entry.created_at;
+                    newDocs[index].loc = entry.loc;
+                    newDocs[index].new_comments_count = count;
+                    callback();
+                });
+            });
+        };
+
+        async.forEachOf(result.docs, getCount, function(err) {
+            return res.status(200).json({
+                docs: newDocs,
+                total: result.total,
+                limit: result.limit,
+                offset: result.offset
+            });
+        });
     });
 });
 
