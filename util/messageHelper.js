@@ -56,14 +56,4 @@ function setMessageObj(req, q) {
     });
 }
 
-function updateViewCountMessage(message) {
-    var conditions = {_id: message._id};
-    var update = {$inc: {views_count: 1}};
-    Message.update(conditions, update, [], function (err) {
-        if (err) {
-            console.log(err);
-        }
-    });
-}
-
-module.exports = {checkInput, setMessage, setMessageObj, updateViewCountMessage};
+module.exports = {checkInput, setMessage, setMessageObj};
