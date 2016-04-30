@@ -63,14 +63,14 @@ function checkView(message, user_id) {
             console.log(err);
         }
         if (!result) {
-            var view = setView(message._id, user_id);
-            view.save(function (err) {
-                updateViewCountMessage(message);
-                if (err) {
-                    console.log(err);
-                }
-            });
+            updateViewCountMessage(message);
         }
+        var view = setView(message._id, user_id);
+        view.save(function (err) {
+            if (err) {
+                console.log(err);
+            }
+        });
     });
 }
 
