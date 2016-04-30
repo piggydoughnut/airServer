@@ -96,7 +96,7 @@ router.get('/user/:id', function (req, res) {
     var options = {
         limit: q.limit,
         offset: q.offset,
-        select: 'description loc created_at'
+        select: 'description loc views_count created_at'
     };
 
     Message.paginate(query, options).then(function (result, err) {
@@ -126,6 +126,8 @@ router.get('/user/:id', function (req, res) {
                     newDocs[index].description = entry.description;
                     newDocs[index].created_at = entry.created_at;
                     newDocs[index].loc = entry.loc;
+                    newDocs[index].views_count = entry.views_count;
+                    newDocs[index].comments_count = entry.comments_count;
                     newDocs[index].new_comments_count = count;
                     callback();
                 });
