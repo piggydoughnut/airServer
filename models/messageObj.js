@@ -15,14 +15,15 @@ var messageObjSchema = new Schema({
             country: String
         },
         validity: {type: Number, required: true},
-        valid: Boolean,
+        valid: {type: Boolean, default: true},
         user: {
             id: {type: String, required: true},
             username: {type: String, required: true}
         },
         obj: Object,
-        object: Boolean,
-        views_count: Number,
+        object: {type: Boolean, default: true},
+        views_count: {type: Number, default: 0},
+        comments_count: {type: Number, default: 0},
         created_at: Date
     },
     {
