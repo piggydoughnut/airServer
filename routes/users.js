@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var userController = require('../controllers/users.controller');
 import {createId} from "../util/queryHelper";
 
 var collectionName = 'users';
@@ -28,8 +29,8 @@ router.get('/:id', function (req, res) {
 });
 
 /* POST User */
-router.post('/', function (req, res) {
-
+router.post('/', function(req,res){
+    userController.postUsers(req,res);
 });
 
 /* PUT User */

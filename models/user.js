@@ -1,27 +1,46 @@
 var mongoose = require('mongoose');
+var bcrypt = require('bcrypt-nodejs');
 
 var Schema = mongoose.Schema;
 var collectionName = 'users';
 
-var messageSchema = new Schema({
-        username: {type: String, required: true},
+var userSchema = new Schema({
+        username: {type: String, unique: true, required: true},
+        password: {type: String, required: true},
         gender: {type: String, required: true},
-        profile_picture: {
-            filename: {type: String, required: true},
-            path: {type: String, required: true},
-            fileSize: {type: String, required: true},
-            mimeType: {type: String, required: true}
-        },
+        email: {type: String, unique: true, required: true},
+        public: {type: Boolean, default: true},
         country_id: Number,
-        birthday: Date,
-        email: {type: String, required: true},
-        password: String,
-        public: Boolean
+        birthday: Date
     },
     {
         collection: collectionName
     });
 
-var Message = mongoose.model('Message', messageSchema);
+// Executes before each user save
+userSchema.pre('save', function (callback) {
+    var user = this;
 
-module.exports = Message;
+    // Break out if the password hasn't changed
+    if(!user.isModified('password')) {
+        return callback();
+    }
+
+    //Password changed and need re-hash
+    bcrypt.genSalt(5, function(err, salt){
+        if(err){
+            return callback(err);
+        }
+
+        bcrypt.hash(user.password, salt, null ,function(err ,hash){
+            if(err){
+                return callback(err);
+            }
+            user.password = hash;
+            callback();
+        });
+    });
+
+});
+
+module.exports = mongoose.model('User', userSchema);
