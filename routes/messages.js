@@ -2,10 +2,11 @@ var express = require('express');
 var sanitize = require("mongo-sanitize");
 var Message = require('../models/message');
 var MessageObj = require('../models/messageObj');
+var View = require('../models/view');
 var Comment = require('../models/comment');
 var Config = require('../config/config');
 import {querySetUp, createId} from "../util/queryHelper";
-import {checkInput} from "../util/messageHelper";
+import {checkInput, setMessage, setMessageObj, setView, checkView} from "../util/messageHelper";
 
 var router = express.Router();
 /* GET Messages */
@@ -47,12 +48,20 @@ router.get('/', function (req, res) {
 
 /* GET Message */
 router.get('/:id', function (req, res) {
-    Message.findOne({_id: createId(req.params.id, res)}, function (err, docs) {
+
+    /** For now since there is no authentication */
+    var user_id = '56ebe2c5871fc6eb9cd08bcc';
+    
+    Message.findOne({_id: createId(req.params.id, res)}, function (err, message) {
         if (err) {
             res.status(400).json(err);
             return;
         }
-        if (docs) {
+        if (message) {
+
+            checkView(message, user_id);
+            
+            /** Looking for message's comments **/
             var query = {parent: req.params.id};
             var options = {
                 limit: 10,
@@ -66,7 +75,7 @@ router.get('/:id', function (req, res) {
                 }
                 result.docs = result.docs.reverse();
                 return res.json({
-                    message: docs,
+                    message: message,
                     comments: result
                 });
             });
@@ -123,46 +132,6 @@ router.post('/', function (req, res) {
         });
     });
 });
-
-function setMessage(req, q) {
-    return new Message({
-        text: req.body.text,
-        loc: {
-            type: "Point",
-            coordinates: [
-                q.lng, q.lat
-            ],
-            longitude: q.lng
-        },
-        validity: req.body.validity,
-        user: req.body.user,
-        file: req.body.file,
-        description: q.desc,
-        created_at: new Date(),
-        view_count: 0,
-        object: false,
-        comments_count: 0
-    });
-}
-
-function setMessageObj(req, q) {
-    return new MessageObj({
-        text: req.body.text,
-        description: q.desc,
-        loc: {
-            type: "Point",
-            coordinates: [
-                q.lng, q.lat
-            ],
-        },
-        validity: req.body.validity,
-        user: req.body.user,
-        obj: req.body.obj,
-        object: true,
-        created_at: new Date(),
-        view_count: 0
-    });
-}
 
 /* POST Comment on a message */
 router.post('/:id/comments', function (req, res) {
