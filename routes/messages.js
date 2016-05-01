@@ -202,8 +202,9 @@ router.post('/:id/comments', passport.authenticate('bearer', { session: false })
                 }
             });
             return res.status(201).json({
-                text: comment.text,
                 _id: comment.id,
+                description: comment.description,
+                created_at: comment.created_at,
                 user: comment.user
             });
         });
