@@ -3,16 +3,16 @@ import {json400, json200} from "../util/requestHelper";
 import {objectLength, isEmptyObject} from "../util/commonHelper";
 import {processFile, checkFilePath, checkFileName} from "../util/fileHelper";
 
+var passport = require('passport');
 var express = require('express');
 var router = express.Router();
 var GalleryFile = require('../models/galleryFile');
 var validator = require('validator');
-
 var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
 
 
-router.post('/form', multipartMiddleware, function (req, res) {
+router.post('/form', multipartMiddleware, passport.authenticate('bearer', { session: false }), function (req, res) {
     var thumb_file_path = '';
     var user_id = null;
 
@@ -59,7 +59,7 @@ router.post('/form', multipartMiddleware, function (req, res) {
         });
 });
 
-router.get('/gallery', function (req, res) {
+router.get('/gallery', passport.authenticate('bearer', { session: false }), function (req, res) {
     try {
         var q = querySetUp(req);
     } catch (error) {
@@ -82,7 +82,7 @@ router.get('/gallery', function (req, res) {
     });
 });
 
-router.get('/gallery/user/:id', function (req, res) {
+router.get('/gallery/user/:id', passport.authenticate('bearer', { session: false }), function (req, res) {
     var id = validator.escape(req.params.id);
 
     try {
@@ -107,7 +107,7 @@ router.get('/gallery/user/:id', function (req, res) {
     });
 });
 
-router.post('/gallery/user', function (req, res) {
+router.post('/gallery/user', passport.authenticate('bearer', { session: false }), function (req, res) {
     if (isEmptyObject(req.body)) {
         return json400(res, 'nothing to post');
     }

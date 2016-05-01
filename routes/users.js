@@ -1,9 +1,9 @@
+import {createId} from "../util/queryHelper";
+
 var express = require('express');
 var passport = require('passport');
 var router = express.Router();
 var userController = require('../controllers/users.controller');
-import {createId} from "../util/queryHelper";
-
 var collectionName = 'users';
 
 
@@ -22,7 +22,7 @@ router.get('/info', passport.authenticate('bearer', { session: false }),
 );
 
 /* GET users  */
-router.get('/', function (req, res) {
+router.get('/', passport.authenticate('bearer', { session: false }), function (req, res) {
     var collection = setUpDb(req, collectionName);
     collection.find({}, {}, function (e, docs) {
         res.json(docs);
@@ -30,7 +30,7 @@ router.get('/', function (req, res) {
 });
 
 /* GET user  */
-router.get('/:id', function (req, res) {
+router.get('/:id', passport.authenticate('bearer', { session: false }), function (req, res) {
     var o_id = createId(req, res, mongo);
 
     setUpDb(req, collectionName).findOne({_id: o_id}, function (err, user) {
@@ -45,7 +45,7 @@ router.get('/:id', function (req, res) {
 });
 
 /* POST User */
-router.post('/', userController.postUsers);
+router.post('/', passport.authenticate('bearer', { session: false }), userController.postUsers);
 
 /* PUT User */
 router.put('/:id', function (req, res) {

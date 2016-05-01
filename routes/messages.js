@@ -1,20 +1,20 @@
+import {querySetUp, createId} from "../util/queryHelper";
+import {checkView} from "../util/viewHelper";
+import {checkInput, setMessage, setMessageObj} from "../util/messageHelper";
+
 var express = require('express');
+var passport = require('passport');
 var sanitize = require("mongo-sanitize");
+var async = require('async');
+var router = express.Router();
+
 var Message = require('../models/message');
 var Comment = require('../models/comment');
 var Config = require('../config/config');
 var View = require('../models/view');
 
-
-import {querySetUp, createId} from "../util/queryHelper";
-import {checkView} from "../util/viewHelper";
-import {checkInput, setMessage, setMessageObj} from "../util/messageHelper";
-
-var async = require('async');
-var router = express.Router();
-
 /* GET Messages */
-router.get('/', function (req, res) {
+router.get('/', passport.authenticate('bearer', { session: false }), function (req, res) {
 
     if (!req.query.hasOwnProperty('lat') || !req.query.hasOwnProperty('lng') || isNaN(req.query.lat) || isNaN(req.query.lng)) {
         return res.status(400).json('Input coordinates are not set');
@@ -51,7 +51,7 @@ router.get('/', function (req, res) {
 });
 
 /* GET Message */
-router.get('/:id', function (req, res) {
+router.get('/:id', passport.authenticate('bearer', { session: false }), function (req, res) {
 
     /** For now since there is no authentication */
     var user_id = '56ebe2c5871fc6eb9cd08bcc';
@@ -90,7 +90,7 @@ router.get('/:id', function (req, res) {
 });
 
 /* GET Messages by User */
-router.get('/user/:id', function (req, res) {
+router.get('/user/:id', passport.authenticate('bearer', { session: false }), function (req, res) {
 
     var q = querySetUp(req);
     var query = {'user.id': req.params.id, parent: null};
@@ -147,7 +147,7 @@ router.get('/user/:id', function (req, res) {
 });
 
 /* POST Message */
-router.post('/', function (req, res) {
+router.post('/', passport.authenticate('bearer', { session: false }), function (req, res) {
 
     var q = checkInput(req);
     var message = {};
@@ -174,7 +174,7 @@ router.post('/', function (req, res) {
 });
 
 /* POST Comment on a message */
-router.post('/:id/comments', function (req, res) {
+router.post('/:id/comments', passport.authenticate('bearer', { session: false }), function (req, res) {
     Message.findOne({_id: createId(req.params.id, res)}, function(err, message) {
         if(!message){
             return res.status(400).json('Message with id ' + req.params.id + ' does not exist');
@@ -211,7 +211,7 @@ router.post('/:id/comments', function (req, res) {
 });
 
 /* GET Message's comments */
-router.get('/:id/comments', function (req, res) {
+router.get('/:id/comments', passport.authenticate('bearer', { session: false }), function (req, res) {
 
     var q = querySetUp(req);
     var query = {parent: req.params.id};
