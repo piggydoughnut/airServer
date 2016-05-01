@@ -20,8 +20,9 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var messages = require('./routes/messages');
 var filesEndpoint = require('./routes/files');
-var clients = require('./routes/clients');
+var oauth = require('./routes/oauth');
 var oauth2 = require('./controllers/oauth2.controller');
+var auth = require('./controllers/auth.controller');
 
 // It instantiates Express and assigns our app variable to it.
 // The next section uses this variable to configure a bunch of Express stuff.
@@ -55,11 +56,10 @@ app.use(function(req, res, next) {
 app.use(passport.initialize());
 
 app.use('/', routes);
-app.use('/api/oauth/token', oauth2.token);
+app.use('/api/oauth', oauth);
 app.use('/users', users);
 app.use('/messages', messages);
 app.use('/files', filesEndpoint);
-app.use('/clients', clients);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
