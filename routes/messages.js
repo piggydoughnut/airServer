@@ -5,6 +5,7 @@ var Comment = require('../models/comment');
 var Config = require('../config/config');
 var View = require('../models/view');
 
+
 import {querySetUp, createId} from "../util/queryHelper";
 import {checkView} from "../util/viewHelper";
 import {checkInput, setMessage, setMessageObj} from "../util/messageHelper";

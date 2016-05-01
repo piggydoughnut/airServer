@@ -6,5 +6,6 @@ module.exports = {
     radiusEarth: 6378.1, /** equatorial radius of earth */
     radiusRes: 0.00000783932, /** radius/radiusEarth */
     domain: 'http://localhost:3000',
-    public_folder: '/public'
+    public_folder: '/public',
+    tokenLife: 3600
 };

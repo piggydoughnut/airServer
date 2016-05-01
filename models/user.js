@@ -1,12 +1,17 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
+var crypto = require('crypto');
 
 var Schema = mongoose.Schema;
 var collectionName = 'users';
 
 var userSchema = new Schema({
         username: {type: String, unique: true, required: true},
-        password: {type: String, required: true},
+        hashedPassword: {type: String, required: true},
+        salt: {
+            type: String,
+            required: true
+        },
         gender: {type: String, required: true},
         email: {type: String, unique: true, required: true},
         public: {type: Boolean, default: true},
@@ -17,30 +22,30 @@ var userSchema = new Schema({
         collection: collectionName
     });
 
-// Executes before each user save
-userSchema.pre('save', function (callback) {
-    var user = this;
 
-    // Break out if the password hasn't changed
-    if(!user.isModified('password')) {
-        return callback();
-    }
+userSchema.methods.encryptPassword = function(password) {
+    return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
+    //more secure - return crypto.pbkdf2Sync(password, this.salt, 10000, 512).toString('hex');
+};
 
-    //Password changed and need re-hash
-    bcrypt.genSalt(5, function(err, salt){
-        if(err){
-            return callback(err);
-        }
-
-        bcrypt.hash(user.password, salt, null ,function(err ,hash){
-            if(err){
-                return callback(err);
-            }
-            user.password = hash;
-            callback();
-        });
+userSchema.virtual('userId')
+    .get(function () {
+        return this.id;
     });
 
-});
+userSchema.virtual('password')
+    .set(function(password) {
+        this._plainPassword = password;
+        this.salt = crypto.randomBytes(32).toString('hex');
+        //more secure - this.salt = crypto.randomBytes(128).toString('hex');
+        this.hashedPassword = this.encryptPassword(password);
+    })
+    .get(function() { return this._plainPassword; });
+
+
+userSchema.methods.checkPassword = function(password) {
+    return this.encryptPassword(password) === this.hashedPassword;
+};
+
 
 module.exports = mongoose.model('User', userSchema);
