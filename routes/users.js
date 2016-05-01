@@ -7,27 +7,22 @@ var userController = require('../controllers/users.controller');
 var collectionName = 'users';
 
 
-router.get('/info', passport.authenticate('bearer', { session: false }),
+router.get('/me', passport.authenticate('bearer', { session: false }),
     function(req, res) {
         // req.authInfo is set using the `info` argument supplied by
         // `BearerStrategy`.  It is typically used to indicate scope of the token,
         // and used in access control checks.  For illustrative purposes, this
         // example simply returns the scope in the response.
         res.json({
-            user_id: req.user.userId,
-            name: req.user.username,
+            _id: req.user.userId,
+            username: req.user.username,
+            birthday: req.user.birthday,
+            public: req.user.public,
+            gender: req.user.gender,
             scope: req.authInfo.scope
         });
     }
 );
-
-/* GET users  */
-router.get('/', passport.authenticate('bearer', { session: false }), function (req, res) {
-    var collection = setUpDb(req, collectionName);
-    collection.find({}, {}, function (e, docs) {
-        res.json(docs);
-    });
-});
 
 /* GET user  */
 router.get('/:id', passport.authenticate('bearer', { session: false }), function (req, res) {

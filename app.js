@@ -57,7 +57,7 @@ app.use(passport.initialize());
 
 app.use('/', routes);
 app.use('/api/oauth', oauth);
-app.use('/users', users);
+app.use('/api/users', users);
 app.use('/messages', messages);
 app.use('/files', filesEndpoint);
 
