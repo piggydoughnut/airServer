@@ -35,8 +35,8 @@ router.get('/', passport.authenticate('bearer', { session: false }), function (r
         }
     };
     var options = {
-        limit: q.limit,
-        offset: q.offset,
+        limit: 99999999,
+        offset: 0,
         select: 'description loc object created_at'
     };
 
@@ -70,14 +70,13 @@ router.get('/:id', passport.authenticate('bearer', { session: false }), function
             var options = {
                 limit: 10,
                 sort: {created_at: -1},
-                select: 'description created_at user'
+                select: 'description text created_at user'
             };
             Message.paginate(query, options).then(function (result, err) {
                 if (err) {
                     res.status(400).json(err);
                     return;
                 }
-                result.docs = result.docs.reverse();
                 return res.json({
                     message: message,
                     comments: result
@@ -92,12 +91,13 @@ router.get('/:id', passport.authenticate('bearer', { session: false }), function
 /* GET Messages by User */
 router.get('/user/:id', passport.authenticate('bearer', { session: false }), function (req, res) {
 
+    console.log(req.params);
     var q = querySetUp(req);
     var query = {'user.id': req.params.id, parent: null};
     var options = {
         limit: q.limit,
         offset: q.offset,
-        select: 'description loc views_count created_at'
+        select: 'description text loc views_count created_at'
     };
 
     Message.paginate(query, options).then(function (result, err) {
@@ -125,8 +125,12 @@ router.get('/user/:id', passport.authenticate('bearer', { session: false }), fun
                     newDocs[index] = {};
                     newDocs[index]._id = entry._id;
                     newDocs[index].description = entry.description;
+                    newDocs[index].text = entry.text;
                     newDocs[index].created_at = entry.created_at;
-                    newDocs[index].loc = entry.loc;
+                    newDocs[index].loc = {
+                        city: 'Prague',
+                        country: 'Czech Republic'
+                    };
                     newDocs[index].views_count = entry.views_count;
                     newDocs[index].comments_count = entry.comments_count;
                     newDocs[index].new_comments_count = count;
@@ -204,6 +208,7 @@ router.post('/:id/comments', passport.authenticate('bearer', { session: false })
             return res.status(201).json({
                 _id: comment.id,
                 description: comment.description,
+                text: comment.text,
                 created_at: comment.created_at,
                 user: comment.user
             });
@@ -220,7 +225,7 @@ router.get('/:id/comments', passport.authenticate('bearer', { session: false }),
         limit: q.limit,
         offset: q.offset,
         sort: {created_at: -1},
-        select: 'description user created_at'
+        select: 'description text user created_at'
     };
 
     Message.paginate(query, options).then(function (result, err) {
@@ -229,7 +234,6 @@ router.get('/:id/comments', passport.authenticate('bearer', { session: false }),
             res.status(400).json(err);
             return;
         }
-        result.docs = result.docs.reverse();
         res.status(200).json(result);
     });
 });
