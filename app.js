@@ -24,6 +24,9 @@ var oauth = require('./routes/oauth');
 var oauth2 = require('./controllers/oauth2.controller');
 var auth = require('./controllers/auth.controller');
 
+var kue = require('kue');
+var queue = kue.createQueue();
+
 // It instantiates Express and assigns our app variable to it.
 // The next section uses this variable to configure a bunch of Express stuff.
 var app = express();
@@ -54,6 +57,12 @@ app.use(function(req, res, next) {
   next();
 });
 app.use(passport.initialize());
+
+app.use(function(req,res,next){
+  req.queue = queue;
+  next();
+});
+
 
 app.use('/', routes);
 app.use('/api/oauth', oauth);
@@ -91,6 +100,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;

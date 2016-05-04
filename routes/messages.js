@@ -1,6 +1,7 @@
 import {querySetUp, createId} from "../util/query.helper";
 import {checkView} from "../util/view.helper";
 import {checkInput, setMessage, setMessageObj} from "../util/message.helper";
+import {addToValidQueue} from "../util/queue.helper";
 
 var express = require('express');
 var passport = require('passport');
@@ -168,6 +169,9 @@ router.post('/', passport.authenticate('bearer', { session: false }), function (
             res.status(400).json(err);
             return;
         }
+
+        addToValidQueue(req.queue, message);
+
         res.status(200).json({
             description: message.description,
             _id: message.id,
