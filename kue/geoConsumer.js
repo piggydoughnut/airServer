@@ -1,14 +1,69 @@
 var mongoose = require('mongoose');
-var Message = require('../models/message');
+mongoose.connect('localhost:27017/airdb');
+var mongo = require('mongodb');
 var kue = require('kue');
 var queue = kue.createQueue();
 
-queue.process('geo-queue', function(job, done){
-    updateValid(job.data, done);
+var Message = require('../models/message');
+var config = require("../config/config");
+var GoogleMapsAPI = require('../node_modules/googlemaps/lib/index');
+var gmAPI = new GoogleMapsAPI(config.google_config);
+
+queue.process('geo-queue', function (job, done) {
+    geoCode(job.data.message, done);
 });
 
-function updateValid(data, done) {
-    console.log(data);
-    console.log('email fn');
-    done();
+function geoCode(data, done) {
+    // reverse geocode API
+    var reverseGeocodeParams = {
+        "latlng": data.loc.coordinates[1] + ',' + data.loc.coordinates[0],
+        "result_type": "locality",
+        "language": "en"
+    };
+
+    gmAPI.reverseGeocode(reverseGeocodeParams, function (err, result) {
+        Message.findById(new mongo.ObjectID(data._id), function (err, message) {
+            if (err) {
+                console.log(err);
+                done();
+            }
+            if (!message) {
+                console.log('there is no message with id ' + data.message_id);
+                done();
+            }
+            if (result.results[0].address_components == undefined) {
+                console.log('No results');
+                done();
+            }
+            parseRespone(result.results[0].address_components).then((address) => {
+                message.loc.city = address.city;
+                message.loc.country = address.country;
+                message.save(function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    console.log('message with id ' + data._id + ' was update with city and country');
+                    done();
+                });
+            });
+
+        });
+    });
+}
+function parseRespone(response) {
+
+    var result = {};
+    return new Promise(function (resolve, reject) {
+        response.forEach(function (val, index) {
+            if (val.types[0] !== undefined && val.types[1] !== undefined) {
+                if (val.types[0] === 'locality' && val.types[1] == 'political') {
+                }
+                if (val.types[0] === 'country' && val.types[1] == 'political') {
+                }
+            }
+            if (result.city !== undefined && result.country !== undefined) {
+                resolve(result);
+            }
+        });
+    });
 }

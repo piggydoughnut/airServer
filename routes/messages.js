@@ -1,7 +1,7 @@
 import {querySetUp, createId} from "../util/query.helper";
 import {checkView} from "../util/view.helper";
 import {checkInput, setMessage, setMessageObj} from "../util/message.helper";
-import {addToValidQueue} from "../util/queue.helper";
+import {addToValidQueue, addToGeoQueue} from "../util/queue.helper";
 
 var express = require('express');
 var passport = require('passport');
@@ -177,6 +177,7 @@ router.post('/', passport.authenticate('bearer', { session: false }), function (
         }
 
         addToValidQueue(req.queue, message);
+        addToGeoQueue(req.queue, message);
 
         res.status(200).json({
             description: message.description,
