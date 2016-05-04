@@ -20,7 +20,6 @@ router.get('/', passport.authenticate('bearer', { session: false }), function (r
     if (!req.query.hasOwnProperty('lat') || !req.query.hasOwnProperty('lng') || isNaN(req.query.lat) || isNaN(req.query.lng)) {
         return res.status(400).json('Input coordinates are not set');
     }
-    var q = querySetUp(req);
     var query = {
         parent: null,
         loc: {
@@ -54,8 +53,6 @@ router.get('/', passport.authenticate('bearer', { session: false }), function (r
 /* GET Message */
 router.get('/:id', passport.authenticate('bearer', { session: false }), function (req, res) {
 
-    /** For now since there is no authentication */
-    var user_id = '56ebe2c5871fc6eb9cd08bcc';
 
     Message.findOne({_id: createId(req.params.id, res)}, function (err, message) {
         if (err) {
@@ -64,7 +61,7 @@ router.get('/:id', passport.authenticate('bearer', { session: false }), function
         }
         if (message) {
 
-            checkView(message, user_id);
+            checkView(message, req.user._id);
 
             /** Looking for message's comments **/
             var query = {parent: req.params.id};
