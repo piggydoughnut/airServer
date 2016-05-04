@@ -1,6 +1,6 @@
-import {querySetUp, createId} from "../util/queryHelper";
-import {json400, json200} from "../util/requestHelper";
-import {objectLength, isEmptyObject} from "../util/commonHelper";
+import {querySetUp, createId} from "../util/query.helper";
+import {json400, json200} from "../util/request.helper";
+import {objectLength, isEmptyObject} from "../util/common.helper";
 import {processFile, checkFilePath, checkFileName} from "../util/fileHelper";
 
 var passport = require('passport');

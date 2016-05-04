@@ -1,4 +1,4 @@
-import {createId} from "../util/queryHelper";
+import {createId} from "../util/query.helper";
 
 var express = require('express');
 var passport = require('passport');

@@ -1,6 +1,6 @@
-import {querySetUp, createId} from "../util/queryHelper";
-import {checkView} from "../util/viewHelper";
-import {checkInput, setMessage, setMessageObj} from "../util/messageHelper";
+import {querySetUp, createId} from "../util/query.helper";
+import {checkView} from "../util/view.helper";
+import {checkInput, setMessage, setMessageObj} from "../util/message.helper";
 
 var express = require('express');
 var passport = require('passport');

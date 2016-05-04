@@ -1,4 +1,4 @@
-import {randomStr} from "./stringHelper";
+import {randomStr} from "./string.helper";
 
 var config = require('../config/config');
 var appDir = process.env.PWD;
