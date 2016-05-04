@@ -77,6 +77,7 @@ router.get('/:id', passport.authenticate('bearer', { session: false }), function
                     res.status(400).json(err);
                     return;
                 }
+                result.docs.reverse();
                 return res.json({
                     message: message,
                     comments: result
@@ -234,6 +235,7 @@ router.get('/:id/comments', passport.authenticate('bearer', { session: false }),
             res.status(400).json(err);
             return;
         }
+        result.docs.reverse();
         res.status(200).json(result);
     });
 });
