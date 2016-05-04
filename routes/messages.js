@@ -21,6 +21,7 @@ router.get('/', passport.authenticate('bearer', { session: false }), function (r
         return res.status(400).json('Input coordinates are not set');
     }
     var query = {
+        valid: true,
         parent: null,
         loc: {
             $geoWithin: {
@@ -61,6 +62,10 @@ router.get('/:id', passport.authenticate('bearer', { session: false }), function
         }
         if (message) {
 
+            if(!message.valid){
+                return res.status(400).json('Given message is not valid anymore');
+            }
+
             checkView(message, req.user._id);
 
             /** Looking for message's comments **/
@@ -92,7 +97,11 @@ router.get('/user/:id', passport.authenticate('bearer', { session: false }), fun
 
     console.log(req.params);
     var q = querySetUp(req);
-    var query = {'user.id': req.params.id, parent: null};
+    var query = {
+        'user.id': req.params.id,
+        parent: null,
+        valid: true
+    };
     var options = {
         limit: q.limit,
         offset: q.offset,
@@ -185,6 +194,10 @@ router.post('/:id/comments', passport.authenticate('bearer', { session: false })
         if(!message){
             return res.status(400).json('Message with id ' + req.params.id + ' does not exist');
         }
+        if(!message.valid){
+            return res.status(400).json('Given message is not valid anymore');
+        }
+
         var q = checkInput(req);
 
         var comment = new Comment({
@@ -230,14 +243,26 @@ router.get('/:id/comments', passport.authenticate('bearer', { session: false }),
         select: 'description text user created_at'
     };
 
-    Message.paginate(query, options).then(function (result, err) {
+    Message.findById(createId(q.params.id), function(err, res) {
         if (err) {
             console.log(err);
             res.status(400).json(err);
             return;
         }
-        result.docs.reverse();
-        res.status(200).json(result);
+
+        if(!res.valid){
+            return res.status(400).json('Given message is not valid anymore');
+        }
+        
+        Message.paginate(query, options).then(function (result, err) {
+            if (err) {
+                console.log(err);
+                res.status(400).json(err);
+                return;
+            }
+            result.docs.reverse();
+            res.status(200).json(result);
+        });
     });
 });
 
