@@ -5,7 +5,7 @@ function addToValidQueue(queue, message){
             message_id: message.id,
             message_expiration: message.validity
         })
-        .delay(60000)
+        .delay(message.validity)
         .save(function (err) {
             if (!err) console.log('Job ' + job.id + ' is being processed');
         });

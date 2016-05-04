@@ -14,7 +14,7 @@ var messageObjSchema = new Schema({
             city: String,
             country: String
         },
-        validity: {type: Number, required: true},
+        validity: {type: Date, required: true},
         valid: {type: Boolean, default: true},
         user: {
             id: {type: String, required: true},

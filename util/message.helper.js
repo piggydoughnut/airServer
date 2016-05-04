@@ -17,6 +17,7 @@ function checkInput(req) {
 }
 
 function setMessage(req, q) {
+    var validity = getValidityDate(req.body.validity);
     return new Message({
         text: req.body.text,
         loc: {
@@ -26,7 +27,8 @@ function setMessage(req, q) {
             ],
             longitude: q.lng
         },
-        validity: req.body.validity,
+        validity: validity,
+        valid: true,
         user: req.body.user,
         file: req.body.file,
         description: q.desc,
@@ -38,6 +40,7 @@ function setMessage(req, q) {
 }
 
 function setMessageObj(req, q) {
+    var validity = getValidityDate(req.body.validity);
     return new MessageObj({
         text: req.body.text,
         description: q.desc,
@@ -47,13 +50,20 @@ function setMessageObj(req, q) {
                 q.lng, q.lat
             ],
         },
-        validity: req.body.validity,
+        validity: validity,
+        valid: true,
         user: req.body.user,
         obj: req.body.obj,
         object: true,
         created_at: new Date(),
         view_count: 0
     });
+}
+
+function getValidityDate(validity){
+    var dateObj = Date.now();
+    dateObj += 1000 * 60 * 60 * 24 * validity;
+    return new Date(dateObj);
 }
 
 module.exports = {checkInput, setMessage, setMessageObj};
