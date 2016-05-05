@@ -21,6 +21,7 @@ var users = require('./routes/users');
 var messages = require('./routes/messages');
 var filesEndpoint = require('./routes/files');
 var oauth = require('./routes/oauth');
+var stats = require('./routes/stats');
 var oauth2 = require('./controllers/oauth2.controller');
 var auth = require('./controllers/auth.controller');
 
@@ -69,6 +70,7 @@ app.use('/api/oauth', oauth);
 app.use('/api/users', users);
 app.use('/messages', messages);
 app.use('/files', filesEndpoint);
+app.use('/stats', stats);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
