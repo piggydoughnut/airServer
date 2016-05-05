@@ -15,6 +15,17 @@ queue.process('geo-queue', function (job, done) {
 
 function geoCode(data, done) {
     // reverse geocode API
+
+    if(data.loc.coordinates == [] ||
+        data.loc.coordinates[0] == undefined ||
+        data.loc.coordinates[0] == null ||
+        data.loc.coordinates[1] == undefined ||
+        data.loc.coordinates[1] == null
+    ){
+        console.log('incorrect coordinates');
+        done();
+        return;
+    }
     var reverseGeocodeParams = {
         "latlng": data.loc.coordinates[1] + ',' + data.loc.coordinates[0],
         "result_type": "locality",
@@ -26,14 +37,19 @@ function geoCode(data, done) {
             if (err) {
                 console.log(err);
                 done();
+                return;
             }
             if (!message) {
                 console.log('there is no message with id ' + data.message_id);
                 done();
+                return;
             }
-            if (result.results[0].address_components == undefined) {
+
+            console.log(result);
+            if (result.status == 'ZERO_RESULTS' || result.results == [] ) {
                 console.log('No results');
                 done();
+                return;
             }
             parseRespone(result.results[0].address_components).then((address) => {
                 message.city = address.city;
