@@ -9,12 +9,12 @@ var messageSchema = new Schema({
         text: {type: String, required: true},
         description: {type: String, required: true},
         loc: {
-            coordinates: {type: Array, required: true},
-            type: {type: String, required: true},
-            city: String,
-            country: String
+            coordinates: {type: [Number], required: true},
+            type: {type: String, required: true}
         },
         validity: {type: Date, required: true},
+        city: String,
+        country: String,
         valid: {type: Boolean, default: true},
         user: {
             id: {type: String, required: true},
@@ -29,6 +29,8 @@ var messageSchema = new Schema({
     {
         collection: collectionName
     });
+
+messageSchema.index({loc : '2dsphere'});
 
 messageSchema.plugin(mongoosePaginate);
 

@@ -36,8 +36,8 @@ function geoCode(data, done) {
                 done();
             }
             parseRespone(result.results[0].address_components).then((address) => {
-                message.loc.city = address.city;
-                message.loc.country = address.country;
+                message.city = address.city;
+                message.country = address.country;
                 message.save(function (err) {
                     if (err) {
                         console.log(err);
