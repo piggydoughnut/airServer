@@ -53,8 +53,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // allow requests from frontend
 app.use(function(req, res, next) {
-  res.set("Access-Control-Allow-Origin", "http://airweb");
-  res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.set("Access-Control-Allow-Origin", "http://localhost:3001");
+  res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   next();
 });
 app.use(passport.initialize());
