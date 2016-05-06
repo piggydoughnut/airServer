@@ -40,7 +40,7 @@ router.get('/:id', passport.authenticate('bearer', { session: false }), function
 });
 
 /* POST User */
-router.post('/', passport.authenticate('bearer', { session: false }), userController.postUsers);
+router.post('/', userController.postUsers);
 
 /* PUT User */
 router.put('/:id', function (req, res) {
