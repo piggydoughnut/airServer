@@ -45,18 +45,19 @@ function geoCode(data, done) {
                 return;
             }
 
-            console.log(result);
             if (result.status == 'ZERO_RESULTS' || result.results == [] ) {
                 console.log('No results');
                 done();
                 return;
             }
             parseRespone(result.results[0].address_components).then((address) => {
+                console.log(address);
                 message.city = address.city;
                 message.country = address.country;
                 message.save(function (err) {
                     if (err) {
                         console.log(err);
+                        done();
                     }
                     console.log('message with id ' + data._id + ' was update with city and country');
                     done();
@@ -73,13 +74,16 @@ function parseRespone(response) {
         response.forEach(function (val, index) {
             if (val.types[0] !== undefined && val.types[1] !== undefined) {
                 if (val.types[0] === 'locality' && val.types[1] == 'political') {
+                    result.city=val.long_name;
                 }
                 if (val.types[0] === 'country' && val.types[1] == 'political') {
+                    result.country=val.long_name;
                 }
             }
             if (result.city !== undefined && result.country !== undefined) {
                 resolve(result);
             }
         });
+        reject('no suitbale results');
     });
 }
