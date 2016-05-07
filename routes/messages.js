@@ -244,17 +244,17 @@ router.get('/:id/comments', passport.authenticate('bearer', { session: false }),
         select: 'description text user created_at'
     };
 
-    Message.findById(createId(q.params.id), function(err, res) {
+    Message.findById(createId(req.params.id), function(err, result) {
         if (err) {
             console.log(err);
             res.status(400).json(err);
             return;
         }
 
-        if(!res.valid){
+        if(!result.valid){
             return res.status(400).json('Given message is not valid anymore');
         }
-        
+
         Message.paginate(query, options).then(function (result, err) {
             if (err) {
                 console.log(err);
