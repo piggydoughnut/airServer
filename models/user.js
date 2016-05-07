@@ -16,8 +16,8 @@ var userSchema = new Schema({
         gender: {type: String, required: false},
         email: {type: String, unique: true, required: true},
         public: {type: Boolean, default: true},
-        country_id: Number,
-        birthday: Date
+        country: String,
+        file: Object
     },
     {
         collection: collectionName

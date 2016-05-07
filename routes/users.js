@@ -4,59 +4,48 @@ var express = require('express');
 var passport = require('passport');
 var router = express.Router();
 var userController = require('../controllers/users.controller');
-var collectionName = 'users';
+var User = require('../models/user');
 
 
-router.get('/me', passport.authenticate('bearer', { session: false }),
-    function(req, res) {
+router.get('/me', passport.authenticate('bearer', {session: false}), function (req, res) {
         // req.authInfo is set using the `info` argument supplied by
         // `BearerStrategy`.  It is typically used to indicate scope of the token,
         // and used in access control checks.  For illustrative purposes, this
         // example simply returns the scope in the response.
-        res.json({
-            _id: req.user.userId,
-            username: req.user.username,
-            birthday: req.user.birthday,
-            public: req.user.public,
-            gender: req.user.gender,
-            scope: req.authInfo.scope
-        });
+        return res.status(200).json(userController.getUserInfo(req.user));
     }
 );
-
-/* GET user  */
-router.get('/:id', passport.authenticate('bearer', { session: false }), function (req, res) {
-    var o_id = createId(req, res, mongo);
-
-    setUpDb(req, collectionName).findOne({_id: o_id}, function (err, user) {
-        if (!user) {
-            return res.status(404).send('User with id ' + o_id + ' was not found');
-        }
-        if (err) {
-            return res.status(400).send(err);
-        }
-        return res.status(200).json({user: user});
-    });
-});
 
 /* POST User */
 router.post('/', userController.postUsers);
 
 /* PUT User */
-router.put('/:id', function (req, res) {
-    // var o_id = createId(req, res, mongo);
-    //
-    // setUpDb(req, collectionName).update(
-    //     {_id: o_id},
-    //     {$set: req.body},
-    //     {upsert: true, w: 1},
-    //     function (err, result) {
-    //         if (err) {
-    //             return res.status(400).send(e.message);
-    //         }
-    //         res.status(200).json("User was updated");
-    //     }
-    // );
+router.put('/:id', passport.authenticate('bearer', {session: false}), function (req, res) {
+    if (req.user._id != req.params.id) {
+        return res.status(400).json('You cannot update other users');
+    }
+    User.findOne({_id: req.user._id}, function (err, user) {
+            if (err) {
+                return res.status(400).json(err);
+            }
+            if (!user) {
+                return res.status(400).json('User does not exist');
+            }
+            user.username = req.body.username;
+            user.gender = req.body.gender;
+            user.country = req.body.country;
+            user.file = req.body.file;
+            user.email = req.body.email;
+            user.password = req.body.password;
+
+            user.save(function (err, user) {
+                if (err) {
+                    return res.status(400).json(err);
+                }
+                return res.status(200).json(userController.getUserInfo(user));
+            });
+        }
+    );
 });
 
 module.exports = router;
