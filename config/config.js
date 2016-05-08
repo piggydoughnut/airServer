@@ -13,5 +13,7 @@ module.exports = {
         stagger_time:       1000, // for elevationPath
         encode_polylines:   false,
         secure:             false // use https
-    }
+    },
+    client_id: '57251d1b26a3c20f8d65c343SecretId',
+    client_secret: '57251d1b26a3c20f8d65c343SecretTest'
 };
