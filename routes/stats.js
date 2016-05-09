@@ -4,6 +4,7 @@ var router = express.Router();
 
 router.get('/countries', function (req, res) {
     Message.aggregate([
+        {$match: {parent: null}},
         {$group: {_id: "$country", value: {$sum: 1}}},
         {$project: {_id: 0, x: "$_id", y: "$value"}},
         {$sort: {y: -1}},
@@ -21,6 +22,7 @@ router.get('/countries', function (req, res) {
 
 router.get('/cities', function (req, res) {
     Message.aggregate([
+        {$match: {parent: null}},
         {$group: {_id: "$city", value: {$sum: 1}}},
         {$project: {_id: 0, x: "$_id", y: "$value"}},
         {$sort: {y: -1}},

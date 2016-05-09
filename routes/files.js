@@ -45,7 +45,7 @@ router.post('/form', multipartMiddleware, passport.authenticate('bearer', { sess
                             console.log(error);
                             return json400(res, err);
                         }
-                        return json200(res, {msg: 'Your obj was successfully uploaded.'});
+                        return json200(res, {msg: 'Upload successful'});
                     });
                 })
                 .catch(error => {

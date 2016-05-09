@@ -105,7 +105,7 @@ router.get('/user/:id', passport.authenticate('bearer', { session: false }), fun
     var options = {
         limit: q.limit,
         offset: q.offset,
-        select: 'description text loc views_count created_at'
+        select: 'description text loc views_count comments_count obj created_at'
     };
 
     Message.paginate(query, options).then(function (result, err) {
