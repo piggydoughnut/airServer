@@ -2,9 +2,9 @@
 
 module.exports = {
     file_upload_folder: '/gallery',
-    radius: 0.05, /** distance in km */
+    radius: 0.5, /** distance in km */
     radiusEarth: 6378.1, /** equatorial radius of earth */
-    radiusRes: 0.00000783932, /** radius/radiusEarth */
+    radiusRes: 7.83932519e-5, /** radius/radiusEarth = radians */
     domain: 'http://localhost:3000',
     public_folder: '/public',
     tokenLife: 3600,
