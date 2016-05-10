@@ -67,16 +67,21 @@ router.get('/:id', passport.authenticate('bearer', { session: false }), function
                 return res.status(400).json('Given message is not valid anymore');
             }
 
-            /** We cannot read messages if we are not close to them */
-            if (geolib.getDistance(
-                    {
-                        latitude: message.loc.coordinates[1],
-                        longitude: message.loc.coordinates[0]
-                    }, {
-                        latitude: req.query.lat,
-                        longitude: req.query.lng
-                    }, 1, 1) > Config.distance) {
-                return res.status(400).json('Far');
+            if (req.user._id != message.user.id) {
+                if (!req.query.hasOwnProperty('lat') || !req.query.hasOwnProperty('lng') || isNaN(req.query.lat) || isNaN(req.query.lng) || req.query.lat==='' || req.query.lat===null || req.query.lng==='' || req.query.lng===null) {
+                    return res.status(400).json('Input coordinates are not set');
+                }
+                /** We cannot read messages if we are not close to them */
+                if (geolib.getDistance(
+                        {
+                            latitude: message.loc.coordinates[1],
+                            longitude: message.loc.coordinates[0]
+                        }, {
+                            latitude: req.query.lat,
+                            longitude: req.query.lng
+                        }, 1, 1) > Config.distance) {
+                    return res.status(400).json('Far');
+                }
             }
 
             checkView(message, req.user._id);
