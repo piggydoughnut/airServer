@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "mocha"
   },
   "dependencies": {
     "async": "^2.0.0-rc.3",
@@ -18,6 +19,7 @@
     "debug": "~2.2.0",
     "express": "~4.13.1",
     "express-session": "^1.13.0",
+    "geolib": "^2.0.21",
     "googlemaps": "^1.4.0",
     "imagemagick": "^0.1.3",
     "jade": "~1.11.0",

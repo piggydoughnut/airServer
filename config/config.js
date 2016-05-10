@@ -15,5 +15,6 @@ module.exports = {
         secure:             false // use https
     },
     client_id: '57251d1b26a3c20f8d65c343SecretId',
-    client_secret: '57251d1b26a3c20f8d65c343SecretTest'
+    client_secret: '57251d1b26a3c20f8d65c343SecretTest',
+    distance: 3
 };

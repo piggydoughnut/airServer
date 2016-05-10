@@ -14,6 +14,8 @@ var Comment = require('../models/comment');
 var Config = require('../config/config');
 var View = require('../models/view');
 
+var geolib = require('geolib/dist/geolib');
+
 /* GET Messages */
 router.get('/', passport.authenticate('bearer', { session: false }), function (req, res) {
 
@@ -54,7 +56,6 @@ router.get('/', passport.authenticate('bearer', { session: false }), function (r
 /* GET Message */
 router.get('/:id', passport.authenticate('bearer', { session: false }), function (req, res) {
 
-
     Message.findOne({_id: createId(req.params.id, res)}, function (err, message) {
         if (err) {
             res.status(400).json(err);
@@ -64,6 +65,18 @@ router.get('/:id', passport.authenticate('bearer', { session: false }), function
 
             if(!message.valid){
                 return res.status(400).json('Given message is not valid anymore');
+            }
+
+            /** We cannot read messages if we are not close to them */
+            if (geolib.getDistance(
+                    {
+                        latitude: message.loc.coordinates[1],
+                        longitude: message.loc.coordinates[0]
+                    }, {
+                        latitude: req.query.lat,
+                        longitude: req.query.lng
+                    }, 1, 1) > Config.distance) {
+                return res.status(400).json('Far');
             }
 
             checkView(message, req.user._id);
@@ -94,7 +107,9 @@ router.get('/:id', passport.authenticate('bearer', { session: false }), function
 
 /* GET Messages by User */
 router.get('/user/:id', passport.authenticate('bearer', { session: false }), function (req, res) {
-
+    if (req.user._id != req.params.id) {
+        return res.status(400).json('You cannot get other users messages');
+    }
     console.log(req.params);
     var q = querySetUp(req);
     var query = {
