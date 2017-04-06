@@ -1,6 +1,6 @@
 # GPS pinned messaging application REST API server
 
-Heavily in development. 
+Deprecated. Stopped dev.
 
 ## API documentation 
 
